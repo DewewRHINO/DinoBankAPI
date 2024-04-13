@@ -55,6 +55,34 @@ def login():
         return jsonify({"message": "Login successful", "user": user[1]}), 200
     else:
         return jsonify({"message": "Login failed"}), 401
+    
+# Create Account
+@app.route('/account', methods=['POST'])
+def create_account():
+    # Parse request data
+    data = request.json
+    username = data.get('username')
+    balance = 1000
+    age = data.get('age')
+    
+    # Perform validation
+    if not username or not age:
+        return jsonify({"message": "Username and password are required"}), 400
+    
+    # Check if the username is already taken ///////////////////////////////////////////if no input validation potential challenge
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE name = ?", (username,))
+    if c.fetchone():
+        conn.close()
+        return jsonify({"message": "Username already exists"}), 409
+    
+    # Insert new user record
+    c.execute("INSERT INTO users (name, balance, age) VALUES (?, ?, ?)", (username, balance, age))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"message": "Account created successfully"}), 201
 
 # Broken Object Level Authorization
 @app.route('/user/<int:user_id>', methods=['GET'])
