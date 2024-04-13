@@ -65,7 +65,7 @@ def get_user(user_id):
     user = c.fetchone()
     conn.close()
     if user:
-        return jsonify({"id": user[0], "name": user[1], "balance": user[2]}), 200
+        return jsonify({"id": user[0], "name": user[1], "balance": user[2], "age": user[3]}), 200
     else:
         return jsonify({"message": "User not found"}), 404
 
