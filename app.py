@@ -27,7 +27,7 @@ def init_db():
     ]
     
     # Insert all user accounts in a single operation
-    c.executemany('''INSERT INTO users (name, balance) VALUES (?, ?)''', user_accounts)
+    c.executemany('''INSERT INTO users (name, balance, age) VALUES (?, ?, ?)''', user_accounts)
     
     conn.commit()
     conn.close()
@@ -69,8 +69,12 @@ def get_user(user_id):
     else:
         return jsonify({"message": "User not found"}), 404
 
+#info endpoint
+#@app.route('/information', methods=['GET'])
+
+
 if __name__ == '__main__':
     app.run(debug=True)
 
-#info endpoint
-@app.route('/information', methods=['GET'])
+
+
