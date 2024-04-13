@@ -16,6 +16,7 @@ def init_db():
     
     # Insert the specified user accounts///////////////////////////////////////////////////////could use sql injection to get pass potentially
     user_accounts = [
+        ('Admin', 'superYuh', 1000, 20),
         ('Kenneth Cher', 'yuh', 1000, 20),
         ('Bill Luong', 'yuh', 1000, 21),
         ('Jessica Leung', 'yuh', 1000, 22),
@@ -171,6 +172,16 @@ def get_all_users():
     for user in users:
         user_list.append({"id": user[0], "name": user[1], "balance": user[3], "age": user[4]})
     return jsonify(user_list), 200
+
+# Delete user (admin only) ///////////////////////////////////////need login token to work
+@app.route('/user/delete/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM users WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "User deleted successfully"}), 200
 
 
 if __name__ == '__main__':
