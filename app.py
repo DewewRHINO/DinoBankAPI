@@ -12,22 +12,22 @@ def init_db():
     c.execute('''DROP TABLE IF EXISTS users''')
     
     # Create the users table anew
-    c.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, balance INTEGER, age INTEGER)''')
+    c.execute('''CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, password TEXT, balance INTEGER, age INTEGER)''')
     
-    # Insert the specified user accounts
+    # Insert the specified user accounts///////////////////////////////////////////////////////could use sql injection to get pass potentially
     user_accounts = [
-        ('Kenneth Cher', 1000, 20),
-        ('Bill Luong', 1000, 21),
-        ('Jessica Leung', 1000, 22),
-        ('Derrick Tran', 1000, 52),
-        ('Tyranno Rex', 1000, 21), ('Stego Sarah', 1000, 65), ('Veloci Raptor', 1000, 49),
-        ('Bronto Bill', 1000, 43), ('Tricera Tops', 1000, 24), ('Ankylo Andy', 1000, 33),
-        ('Ptero Peter', 1000, 22), ('Diplo Dan', 1000, 39), ('Iguano Izzy', 1000, 53),
-        ('Mammothus Maximus', 1000, 18)
+        ('Kenneth Cher', 'yuh', 1000, 20),
+        ('Bill Luong', 'yuh', 1000, 21),
+        ('Jessica Leung', 'yuh', 1000, 22),
+        ('Derrick Tran', 'yuh', 1000, 52),
+        ('Tyranno Rex', 'yuh', 1000, 21), ('Stego Sarah', 'yuh', 1000, 65), ('Veloci Raptor', 'yuh', 1000, 49),
+        ('Bronto Bill', 'yuh', 1000, 43), ('Tricera Tops', 'yuh', 1000, 24), ('Ankylo Andy', 'yuh', 1000, 33),
+        ('Ptero Peter', 'yuh', 1000, 22), ('Diplo Dan', 'yuh', 1000, 39), ('Iguano Izzy', 'yuh', 1000, 53),
+        ('Mammothus Maximus', 'yuh', 1000, 18)
     ]
     
     # Insert all user accounts in a single operation
-    c.executemany('''INSERT INTO users (name, balance, age) VALUES (?, ?, ?)''', user_accounts)
+    c.executemany('''INSERT INTO users (name, password, balance, age) VALUES (?, ?, ?, ?)''', user_accounts)
     
     conn.commit()
     conn.close()
@@ -62,12 +62,13 @@ def create_account():
     # Parse request data
     data = request.json
     username = data.get('username')
+    password = data.get('password')
     balance = 1000
     age = data.get('age')
     
     # Perform validation
-    if not username or not age:
-        return jsonify({"message": "Username and password are required"}), 400
+    if not username or not password or not age:
+        return jsonify({"message": "Username, password, and age are required"}), 400
     
     # Check if the username is already taken ///////////////////////////////////////////if no input validation potential challenge
     conn = sqlite3.connect('dinobank.db')
@@ -78,7 +79,7 @@ def create_account():
         return jsonify({"message": "Username already exists"}), 409
     
     # Insert new user record
-    c.execute("INSERT INTO users (name, balance, age) VALUES (?, ?, ?)", (username, balance, age))
+    c.execute("INSERT INTO users (name, password, balance, age) VALUES (?, ?, ?, ?)", (username, password, balance, age))
     conn.commit()
     conn.close()
     
@@ -93,7 +94,7 @@ def get_user(user_id):
     user = c.fetchone()
     conn.close()
     if user:
-        return jsonify({"id": user[0], "name": user[1], "balance": user[2], "age": user[3]}), 200
+        return jsonify({"id": user[0], "name": user[1], "balance": user[3], "age": user[4]}), 200
     else:
         return jsonify({"message": "User not found"}), 404
 
