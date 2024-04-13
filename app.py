@@ -98,13 +98,66 @@ def get_user(user_id):
     else:
         return jsonify({"message": "User not found"}), 404
 
-#info endpoint
+# Information endpoint
 @app.route('/information', methods=['GET'])
 def information():
     return 'Dinobank. Protecting your assets since 65 MYA.\n'
 
+# Deposit Endpoint
+@app.route('/account/deposit', methods=['POST'])
+def deposit():
+    data = request.json
+    username = data.get('username')
+    amount = data.get('amount')
+    
+    if not username or not amount:
+        return jsonify({"message": "Username and amount are required"}), 400
 
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE name = ?", (username,))
+    user = c.fetchone()
+    
+    if not user:
+        conn.close()
+        return jsonify({"message": "User not found"}), 404
+    
+    new_balance = user[2] + amount
+    c.execute("UPDATE users SET balance = ? WHERE name = ?", (new_balance, username))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"message": "Deposit successful", "new_balance": new_balance}), 200
 
+# Withdraw Endpoint
+@app.route('/account/withdraw', methods=['POST'])
+def withdraw():
+    data = request.json
+    username = data.get('username')
+    amount = data.get('amount')
+    
+    if not username or not amount:
+        return jsonify({"message": "Username and amount are required"}), 400
+
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE name = ?", (username,))
+    user = c.fetchone()
+    
+    if not user:
+        conn.close()
+        return jsonify({"message": "User not found"}), 404
+    
+    if user[2] < amount:
+        conn.close()
+        return jsonify({"message": "Insufficient balance"}), 403
+    
+    new_balance = user[2] - amount
+    c.execute("UPDATE users SET balance = ? WHERE name = ?", (new_balance, username))
+    conn.commit()
+    conn.close()
+    
+    return jsonify({"message": "Withdrawal successful", "new_balance": new_balance}), 200
 
 
 if __name__ == '__main__':
