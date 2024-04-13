@@ -122,12 +122,12 @@ def deposit():
         conn.close()
         return jsonify({"message": "User not found"}), 404
     
-    new_balance = user[2] + amount
+    new_balance = user[3] + amount
     c.execute("UPDATE users SET balance = ? WHERE name = ?", (new_balance, username))
     conn.commit()
     conn.close()
     
-    return jsonify({"message": "Deposit successful", "new_balance": new_balance}), 200
+    return jsonify({"message": "woo hoo youre rich", "new_balance": new_balance}), 200
 
 # Withdraw Endpoint
 @app.route('/account/withdraw', methods=['POST'])
@@ -148,16 +148,16 @@ def withdraw():
         conn.close()
         return jsonify({"message": "User not found"}), 404
     
-    if user[2] < amount:
+    if user[3] < amount:
         conn.close()
         return jsonify({"message": "Insufficient balance"}), 403
     
-    new_balance = user[2] - amount
+    new_balance = user[3] - amount
     c.execute("UPDATE users SET balance = ? WHERE name = ?", (new_balance, username))
     conn.commit()
     conn.close()
     
-    return jsonify({"message": "Withdrawal successful", "new_balance": new_balance}), 200
+    return jsonify({"message": "womp womp gotta spend some to make some", "new_balance": new_balance}), 200
 
 
 if __name__ == '__main__':
