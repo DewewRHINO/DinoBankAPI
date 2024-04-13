@@ -159,6 +159,19 @@ def withdraw():
     
     return jsonify({"message": "womp womp gotta spend some to make some", "new_balance": new_balance}), 200
 
+# Account Endpoint
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users")
+    users = c.fetchall()
+    conn.close()
+    user_list = []
+    for user in users:
+        user_list.append({"id": user[0], "name": user[1], "balance": user[3], "age": user[4]})
+    return jsonify(user_list), 200
+
 
 if __name__ == '__main__':
     app.run(debug=True)
