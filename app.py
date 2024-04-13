@@ -174,6 +174,7 @@ def get_all_users():
     return jsonify(user_list), 200
 
 # Delete user (admin only) ///////////////////////////////////////need login token to work
+
 @app.route('/user/delete/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     conn = sqlite3.connect('dinobank.db')
