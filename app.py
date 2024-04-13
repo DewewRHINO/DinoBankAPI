@@ -70,7 +70,12 @@ def get_user(user_id):
         return jsonify({"message": "User not found"}), 404
 
 #info endpoint
-#@app.route('/information', methods=['GET'])
+@app.route('/information', methods=['GET'])
+def information():
+    return 'Dinobank. Protecting your assets since 65 MYA.\n'
+
+
+
 
 
 if __name__ == '__main__':
