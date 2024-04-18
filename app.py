@@ -16,7 +16,7 @@ def init_db():
     
     # Insert the specified user accounts///////////////////////////////////////////////////////could use sql injection to get pass potentially
     user_accounts = [
-        ('Admin', 'superYuh', 1000, 20),
+        ('Admin', 'APImoment', 1000, 20),
         ('Kenneth Cher', 'yuh', 1000, 20),
         ('Bill Luong', 'yuh', 1000, 21),
         ('Jessica Leung', 'yuh', 1000, 22),
@@ -186,7 +186,7 @@ def delete_user(user_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000, host='0.0.0.0')
 
 
 
