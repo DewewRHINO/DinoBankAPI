@@ -16,15 +16,15 @@ def init_db():
     
     # Insert the specified user accounts///////////////////////////////////////////////////////could use sql injection to get pass potentially
     user_accounts = [
-        ('Admin', 'APImoment', 1000, 20),
-        ('Kenneth Cher', 'yuh', 1000, 20),
-        ('Bill Luong', 'yuh', 1000, 21),
-        ('Jessica Leung', 'yuh', 1000, 22),
-        ('Derrick Tran', 'yuh', 1000, 52),
-        ('Tyranno Rex', 'yuh', 1000, 21), ('Stego Sarah', 'yuh', 1000, 65), ('Veloci Raptor', 'yuh', 1000, 49),
-        ('Bronto Bill', 'yuh', 1000, 43), ('Tricera Tops', 'yuh', 1000, 24), ('Ankylo Andy', 'yuh', 1000, 33),
-        ('Ptero Peter', 'yuh', 1000, 22), ('Diplo Dan', 'yuh', 1000, 39), ('Iguano Izzy', 'yuh', 1000, 53),
-        ('Mammothus Maximus', 'yuh', 1000, 18)
+        ('Admin', 'APImoment', 1000, 9000),
+        ('Kenneth Cher', 'apple', 1000, 20),
+        ('Bill Luong', 'banana', 1000, 21),
+        ('Jessica Leung', 'cherry', 1000, 22),
+        ('Derrick Tran', 'dragon', 1000, 52),
+        ('Tyranno Rex', 'elephant', 1000, 21), ('Stego Sarah', 'flamingo', 1000, 65), ('Veloci Raptor', 'giraffe', 1000, 49),
+        ('Bronto Bill', 'hippo', 1000, 43), ('Tricera Tops', 'iguana', 1000, 24), ('Ankylo Andy', 'jaguar', 1000, 33),
+        ('Ptero Peter', 'alpaca', 1000, 22), ('Diplo Dan', 'bison', 1000, 39), ('Iguano Izzy', 'walrus', 1000, 53),
+        ('Mammothus Maximus', 'narwhal', 1000, 18)
     ]
     
     # Insert all user accounts in a single operation
@@ -71,7 +71,7 @@ def create_account():
     if not username or not password or not age:
         return jsonify({"message": "Username, password, and age are required"}), 400
     
-    # Check if the username is already taken ///////////////////////////////////////////if no input validation potential challenge
+    # Check if the username is already taken 
     conn = sqlite3.connect('dinobank.db')
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE name = ?", (username,))
@@ -173,7 +173,7 @@ def get_all_users():
         user_list.append({"id": user[0], "name": user[1], "balance": user[3], "age": user[4]})
     return jsonify(user_list), 200
 
-# Delete user (admin only) ///////////////////////////////////////need login token to work
+# Delete user 
 
 @app.route('/user/delete/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
@@ -184,6 +184,18 @@ def delete_user(user_id):
     conn.close()
     return jsonify({"message": "User deleted successfully"}), 200
 
+@app.route('/user/<int:user_id>/password', methods=['GET'])
+def get_user_password(user_id):
+    conn = sqlite3.connect('dinobank.db')
+    c = conn.cursor()
+    c.execute("SELECT password FROM users WHERE id = ?", (user_id,))
+    user = c.fetchone()
+    conn.close()
+
+    if user:
+        return jsonify({"user_id": user_id, "password": user[0]}), 200
+    else:
+        return jsonify({"message": "User not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')
